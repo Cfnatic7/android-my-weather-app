@@ -67,13 +67,10 @@ public class MainActivity extends AppCompatActivity {
         cityListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-                // Usuń miasto z listy
                 String removedCity = cityList.remove(position);
 
-                // Usuń zapisane dane pogodowe dla usuniętego miasta
                 deleteWeatherDataFile(removedCity);
 
-                // Aktualizuj adapter
                 cityListAdapter.notifyDataSetChanged();
 
                 return true;
@@ -135,7 +132,6 @@ public class MainActivity extends AppCompatActivity {
         if (!cityList.contains(city)) {
             cityList.add(city);
 
-            // Zaktualizuj dane pogodowe dla nowo dodanego miasta
             if (isConnectedToInternet()) {
                 List<String> newCityList = new ArrayList<>();
                 newCityList.add(city);
@@ -168,7 +164,19 @@ public class MainActivity extends AppCompatActivity {
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String newCityName = input.getText().toString();
+                String newCityName = input.getText().toString().trim();
+
+                // Sprawdź, czy wprowadzone dane są poprawne
+                if (newCityName.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "City name cannot be empty.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Sprawdź, czy miasto już istnieje na liście (z wyjątkiem edytowanego miasta)
+                if (cityList.contains(newCityName) && !cityList.get(position).equals(newCityName)) {
+                    Toast.makeText(MainActivity.this, "City already exists in the list.", Toast.LENGTH_LONG).show();
+                    return;
+                }
 
                 // Zaktualizuj listę miast i adapter
                 cityList.set(position, newCityName);
@@ -193,5 +201,6 @@ public class MainActivity extends AppCompatActivity {
 
         builder.show();
     }
+
 
 }
