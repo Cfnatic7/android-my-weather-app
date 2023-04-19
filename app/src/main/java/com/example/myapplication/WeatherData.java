@@ -1,8 +1,9 @@
 package com.example.myapplication;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class WeatherData {
+public class WeatherData implements Serializable {
     public double getLatitude() {
         return latitude;
     }
@@ -58,7 +59,7 @@ public class WeatherData {
     private List<WeatherDay> days;
 }
 
-class WeatherDay {
+class WeatherDay implements Serializable {
     public String getDatetime() {
         return datetime;
     }
@@ -91,7 +92,7 @@ class WeatherDay {
         this.minTemp = minTemp;
     }
 
-    public int getHumidity() {
+    public double getHumidity() {
         return humidity;
     }
 
@@ -115,7 +116,7 @@ class WeatherDay {
         this.windSpeed = windSpeed;
     }
 
-    public int getWindDir() {
+    public double getWindDir() {
         return windDir;
     }
 
@@ -178,10 +179,10 @@ class WeatherDay {
     private double temp;
     private double maxTemp;
     private double minTemp;
-    private int humidity;
+    private double humidity;
     private double precip;
     private double windSpeed;
-    private int windDir;
+    private double windDir;
     private double pressure;
     private double cloudCover;
     private String sunrise;

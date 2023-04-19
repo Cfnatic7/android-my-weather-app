@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
@@ -36,18 +35,19 @@ public class WeatherFragment extends Fragment {
         pressureTextView = view.findViewById(R.id.pressureTextView);
         weatherDescriptionTextView = view.findViewById(R.id.weatherDescriptionTextView);
 
-        return view;
-    }
+        // Get WeatherData from the fragment's arguments
+        WeatherData weatherData = (WeatherData) getArguments().getSerializable("weatherData");
 
-    public void updateWeatherData(WeatherData weatherData) {
         // Update views with the new weather data
         cityNameTextView.setText(weatherData.getCityName());
-        coordinatesTextView.setText("latidute: " + weatherData.getLatitude() + ", longitude: " + weatherData.getLongitude());
+        coordinatesTextView.setText("latitude: " + weatherData.getLatitude() + ", longitude: " + weatherData.getLongitude());
         dateTimeTextView.setText(weatherData.getDays().get(0).getDatetime());
         temperatureTextView.setText(String.valueOf(weatherData.getDays().get(0).getTemp()));
         pressureTextView.setText(String.valueOf(weatherData.getDays().get(0).getPressure()));
+        System.out.println("Initialized weather fragment");
+        System.out.println(coordinatesTextView.getText());
 
-        // You might need to create a WeatherData class to hold and manage the weather data properties.
+        return view;
     }
 }
 

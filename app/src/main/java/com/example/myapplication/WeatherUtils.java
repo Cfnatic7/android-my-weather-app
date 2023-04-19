@@ -15,6 +15,7 @@ public class WeatherUtils {
                 FileReader fileReader = new FileReader(file);
                 Gson gson = new Gson();
                 WeatherData weatherData = gson.fromJson(fileReader, WeatherData.class);
+                weatherData.setCityName(cityName);
                 fileReader.close();
                 return weatherData;
             } catch (IOException e) {
