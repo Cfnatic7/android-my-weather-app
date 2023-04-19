@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         cityListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Wyświetl okno dialogowe do edycji miasta
+
                 showEditCityDialog(position);
             }
         });
@@ -154,35 +154,36 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Edit City");
 
-        // Ustaw EditText z bieżącą nazwą miasta
+
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         input.setText(cityList.get(position));
         builder.setView(input);
 
-        // Ustaw przyciski
+
         builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String newCityName = input.getText().toString().trim();
+                String oldCityName = cityList.get(position);
 
-                // Sprawdź, czy wprowadzone dane są poprawne
                 if (newCityName.isEmpty()) {
                     Toast.makeText(MainActivity.this, "City name cannot be empty.", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                // Sprawdź, czy miasto już istnieje na liście (z wyjątkiem edytowanego miasta)
                 if (cityList.contains(newCityName) && !cityList.get(position).equals(newCityName)) {
                     Toast.makeText(MainActivity.this, "City already exists in the list.", Toast.LENGTH_LONG).show();
                     return;
                 }
 
-                // Zaktualizuj listę miast i adapter
+                deleteWeatherDataFile(oldCityName);
+
+
                 cityList.set(position, newCityName);
                 cityListAdapter.notifyDataSetChanged();
 
-                // Zaktualizuj dane pogodowe dla zmienionego miasta
+
                 if (isConnectedToInternet()) {
                     List<String> updatedCityList = new ArrayList<>();
                     updatedCityList.add(newCityName);
