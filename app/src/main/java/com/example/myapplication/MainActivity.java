@@ -19,7 +19,9 @@ import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -85,12 +87,23 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        cityList = new ArrayList<>(loadSavedCities());
+        cityListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cityList);
+        cityListView.setAdapter(cityListAdapter);
+
 
 
         if (isConnectedToInternet()) {
             fetchAndSaveWeatherData(cityList);
         } else {
-            Toast.makeText(this, "No internet connection. Unable to fetch weather data.", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No internet connection. Loading saved weather data (may be outdated).", Toast.LENGTH_LONG).show();
+
+            for (String city : cityList) {
+                String weatherData = loadWeatherDataFromFile(city);
+                if (weatherData != null) {
+                    // Wyświetl wczytane dane pogodowe dla danego miasta (zaimplementuj logikę wyświetlania danych)
+                }
+            }
         }
     }
 
@@ -201,6 +214,42 @@ public class MainActivity extends AppCompatActivity {
         });
 
         builder.show();
+    }
+
+
+    private String loadWeatherDataFromFile(String cityName) {
+        try {
+            FileInputStream fis = openFileInput(cityName + ".json");
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader bufferedReader = new BufferedReader(isr);
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            return stringBuilder.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private List<String> loadSavedCities() {
+        List<String> savedCities = new ArrayList<>();
+        File filesDir = getFilesDir();
+        File[] jsonFiles = filesDir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".json");
+            }
+        });
+
+        for (File jsonFile : jsonFiles) {
+            String cityName = jsonFile.getName().replace(".json", "");
+            savedCities.add(cityName);
+        }
+
+        return savedCities;
     }
 
 
