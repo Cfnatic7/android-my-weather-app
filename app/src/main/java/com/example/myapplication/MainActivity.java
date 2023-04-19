@@ -1,12 +1,16 @@
 package com.example.myapplication;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -14,6 +18,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -58,6 +63,32 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        cityListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                // Usuń miasto z listy
+                String removedCity = cityList.remove(position);
+
+                // Usuń zapisane dane pogodowe dla usuniętego miasta
+                deleteWeatherDataFile(removedCity);
+
+                // Aktualizuj adapter
+                cityListAdapter.notifyDataSetChanged();
+
+                return true;
+            }
+        });
+
+        cityListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Wyświetl okno dialogowe do edycji miasta
+                showEditCityDialog(position);
+            }
+        });
+
+
 
         if (isConnectedToInternet()) {
             fetchAndSaveWeatherData(cityList);
@@ -115,5 +146,52 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    private void deleteWeatherDataFile(String cityName) {
+        String fileName = cityName + ".json";
+        File file = new File(getFilesDir(), fileName);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    private void showEditCityDialog(final int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Edit City");
+
+        // Ustaw EditText z bieżącą nazwą miasta
+        final EditText input = new EditText(this);
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setText(cityList.get(position));
+        builder.setView(input);
+
+        // Ustaw przyciski
+        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String newCityName = input.getText().toString();
+
+                // Zaktualizuj listę miast i adapter
+                cityList.set(position, newCityName);
+                cityListAdapter.notifyDataSetChanged();
+
+                // Zaktualizuj dane pogodowe dla zmienionego miasta
+                if (isConnectedToInternet()) {
+                    List<String> updatedCityList = new ArrayList<>();
+                    updatedCityList.add(newCityName);
+                    fetchAndSaveWeatherData(updatedCityList);
+                } else {
+                    Toast.makeText(MainActivity.this, "No internet connection. Unable to fetch weather data.", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
 
 }
