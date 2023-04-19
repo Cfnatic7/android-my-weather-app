@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -82,10 +83,11 @@ public class MainActivity extends AppCompatActivity {
         cityListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                showEditCityDialog(position);
+                String selectedCity = cityList.get(position);
+                showWeatherFragment(selectedCity);
             }
         });
+
 
         cityList = new ArrayList<>(loadSavedCities());
         cityListAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, cityList);
@@ -104,6 +106,10 @@ public class MainActivity extends AppCompatActivity {
                     // Wyświetl wczytane dane pogodowe dla danego miasta (zaimplementuj logikę wyświetlania danych)
                 }
             }
+        }
+
+        if (!cityList.isEmpty()) {
+            showWeatherFragment(cityList.get(0));
         }
     }
 
@@ -251,6 +257,18 @@ public class MainActivity extends AppCompatActivity {
 
         return savedCities;
     }
+
+    private void showWeatherFragment(String cityName) {
+        WeatherFragment weatherFragment = new WeatherFragment();
+        // Load weather data for the city and update the fragment (you might need to implement a WeatherData class to manage the weather properties)
+        WeatherData weatherData = WeatherUtils.getWeatherDataFromFile(this, cityName);
+        weatherFragment.updateWeatherData(weatherData);
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.weatherFragmentContainer, weatherFragment);
+        fragmentTransaction.commit();
+    }
+
 
 
 }
