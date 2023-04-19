@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.FileOutputStream;
@@ -19,11 +20,14 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private EditText cityEditText;
+
+    private String apiKey = "9SBP5FA7VTPNJR8ASV82RE3HU";
     private Button addCityButton;
     private ListView cityListView;
 
@@ -54,6 +58,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        if (isConnectedToInternet()) {
+            fetchAndSaveWeatherData(cityList);
+        } else {
+            Toast.makeText(this, "No internet connection. Unable to fetch weather data.", Toast.LENGTH_LONG).show();
+        }
     }
 
     private boolean isConnectedToInternet() {
@@ -66,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         for (String city : cityList) {
             new Thread(() -> {
                 try {
-                    URL url = new URL("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" + city + "/" + LocalDate.now() + "/" + LocalDate.now().plusDays(3) + "?unitGroup=metric&key=YOUR_API_KEY");
+                    URL url = new URL("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" + city + "/" + LocalDate.now(ZoneId.systemDefault()) + "/" + LocalDate.now(ZoneId.systemDefault()).plusDays(3) + "?unitGroup=metric&key=" + apiKey);
                     HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                     BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 
