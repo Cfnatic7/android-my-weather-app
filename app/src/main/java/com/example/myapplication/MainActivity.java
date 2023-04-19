@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String cityName = cityEditText.getText().toString();
                 if (!cityName.isEmpty()) {
-                    cityList.add(cityName);
+                    addCityToList(cityName);
                     cityListAdapter.notifyDataSetChanged();
                     cityEditText.getText().clear();
                 }
@@ -97,6 +97,21 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }).start();
+        }
+    }
+
+    private void addCityToList(String city) {
+        if (!cityList.contains(city)) {
+            cityList.add(city);
+
+            // Zaktualizuj dane pogodowe dla nowo dodanego miasta
+            if (isConnectedToInternet()) {
+                List<String> newCityList = new ArrayList<>();
+                newCityList.add(city);
+                fetchAndSaveWeatherData(newCityList);
+            } else {
+                Toast.makeText(this, "No internet connection. Unable to fetch weather data.", Toast.LENGTH_LONG).show();
+            }
         }
     }
 
