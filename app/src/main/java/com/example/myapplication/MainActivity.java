@@ -259,17 +259,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void showWeatherFragment(String cityName) {
-        WeatherFragment weatherFragment = new WeatherFragment();
-        // Load weather data for the city
         WeatherData weatherData = WeatherUtils.getWeatherDataFromFile(this, cityName);
 
-        // Set the weather data as an argument for the fragment
-        Bundle args = new Bundle();
-        args.putSerializable("weatherData", weatherData);
-        weatherFragment.setArguments(args);
+        WeatherFragment weatherFragment = new WeatherFragment();
+        Bundle weatherArgs = new Bundle();
+        weatherArgs.putSerializable("weatherData", weatherData);
+        weatherFragment.setArguments(weatherArgs);
+
+        AdditionalWeatherFragment additionalWeatherFragment = new AdditionalWeatherFragment();
+        Bundle additionalWeatherArgs = new Bundle();
+        additionalWeatherArgs.putSerializable("weatherData", weatherData);
+        additionalWeatherFragment.setArguments(additionalWeatherArgs);
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.weatherFragmentContainer, weatherFragment);
+        fragmentTransaction.replace(R.id.additionalWeatherFragmentContainer, additionalWeatherFragment);
         fragmentTransaction.commit();
     }
 
