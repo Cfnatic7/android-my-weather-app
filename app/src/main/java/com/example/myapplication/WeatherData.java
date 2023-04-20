@@ -69,6 +69,7 @@ class WeatherDay implements Serializable {
     }
 
     public double getTemp() {
+        if (MainActivity.temperatureUnitId == R.id.action_fahrenheit) return celsiusToFahrenheit(maxTemp);
         return temp;
     }
 
@@ -77,6 +78,7 @@ class WeatherDay implements Serializable {
     }
 
     public double getMaxTemp() {
+        if (MainActivity.temperatureUnitId == R.id.action_fahrenheit) return celsiusToFahrenheit(maxTemp);
         return maxTemp;
     }
 
@@ -85,6 +87,7 @@ class WeatherDay implements Serializable {
     }
 
     public double getMinTemp() {
+        if (MainActivity.temperatureUnitId == R.id.action_fahrenheit) return celsiusToFahrenheit(maxTemp);
         return minTemp;
     }
 
@@ -109,6 +112,7 @@ class WeatherDay implements Serializable {
     }
 
     public double getWindspeed() {
+        if (MainActivity.speedUnitId == R.id.action_ms) return kilometersPerHourToMetersPerSecond(windspeed);
         return windspeed;
     }
 
@@ -216,6 +220,14 @@ class WeatherDay implements Serializable {
         this.conditions = conditions;
         this.icon = icon;
         this.description = description;
+    }
+
+    private double celsiusToFahrenheit(double celsius) {
+        return (celsius * 9.0 / 5.0) + 32;
+    }
+
+    private double kilometersPerHourToMetersPerSecond(double kilometersPerHour) {
+        return kilometersPerHour * 1000.0 / 3600.0;
     }
 }
 

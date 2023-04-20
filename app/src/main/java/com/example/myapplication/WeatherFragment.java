@@ -40,7 +40,13 @@ public class WeatherFragment extends Fragment {
         cityNameTextView.setText(weatherData.getCityName());
         coordinatesTextView.setText("latitude: " + weatherData.getLatitude() + ", longitude: " + weatherData.getLongitude());
         dateTimeTextView.setText("current date: " + weatherData.getDays().get(0).getDatetime());
-        temperatureTextView.setText(String.valueOf(weatherData.getDays().get(0).getTemp()) + " °C");
+        if (MainActivity.temperatureUnitId == R.id.action_celsius) {
+            temperatureTextView.setText(String.valueOf(weatherData.getDays().get(0).getTemp()) + " °C");
+        }
+        else if (MainActivity.temperatureUnitId == R.id.action_fahrenheit) {
+            temperatureTextView.setText(String.valueOf(weatherData.getDays().get(0).getTemp()) + " °F");
+        }
+
         pressureTextView.setText(String.valueOf(weatherData.getDays().get(0).getPressure()) + " hPa");
         weatherDescriptionTextView.setText(weatherData.getDays().get(0).getDescription());
 

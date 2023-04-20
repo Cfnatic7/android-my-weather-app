@@ -51,6 +51,10 @@ public class MainActivity extends AppCompatActivity {
 
     private MainActivity mainActivity = this;
 
+    public static int temperatureUnitId = R.id.action_celsius;
+
+    public static int speedUnitId = R.id.action_kmh;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -257,12 +261,28 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_refresh) {
-            // Tutaj umieść logikę odświeżania danych z internetu
-            // na przykład, można wywołać funkcję, która pobierze nowe dane pogodowe
+        int id = item.getItemId();
+
+        if (id == R.id.action_refresh) {
             for(String city : cityList) {
                 refreshWeatherData(city);
             }
+            return true;
+        }
+        else if (id == R.id.action_celsius || id == R.id.action_fahrenheit || id == R.id.action_kmh || id == R.id.action_ms) {
+            if (id == R.id.action_celsius) {
+                temperatureUnitId = R.id.action_celsius;
+            }
+            else if(id == R.id.action_fahrenheit) {
+                temperatureUnitId = R.id.action_fahrenheit;
+            }
+            else if(id == R.id.action_kmh) {
+                speedUnitId = R.id.action_kmh;
+            }
+            else {
+                speedUnitId = R.id.action_ms;
+            }
+            refreshView();
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -341,6 +361,37 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         }).start();
+    }
+
+    private void refreshView() {
+        for (String city : cityList) {
+            WeatherData weatherData = WeatherUtils.getWeatherDataFromFile(MainActivity.this, city);
+
+            TabLayout tabLayout = findViewById(R.id.tabLayout);
+            ViewPager2 viewPager = findViewById(R.id.viewPager);
+            WeatherPagerAdapter weatherPagerAdapter = new WeatherPagerAdapter(getSupportFragmentManager(), getLifecycle(), weatherData);
+
+            viewPager.setAdapter(weatherPagerAdapter);
+            TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
+                @Override
+                public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                    switch (position) {
+                        case 0:
+                            tab.setText("Weather");
+                            break;
+                        case 1:
+                            tab.setText("Additional information");
+                            break;
+                        case 2:
+                            tab.setText("Forecast");
+                            break;
+                        default:
+                            throw new IllegalStateException("Invalid tab position: " + position);
+                    }
+                }
+            });
+            tabLayoutMediator.attach();
+        }
     }
 
 }

@@ -37,7 +37,13 @@ public class AdditionalWeatherFragment extends Fragment {
         if (getArguments() != null) {
             WeatherData weatherData = (WeatherData) getArguments().getSerializable("weatherData");
             if (weatherData != null) {
-                windSpeedTextView.setText("Wind Speed: " + weatherData.getDays().get(0).getWindspeed() + " km/h");
+                if (MainActivity.speedUnitId == R.id.action_kmh) {
+                    windSpeedTextView.setText("Wind Speed: " + weatherData.getDays().get(0).getWindspeed() + " km/h");
+                }
+                else if (MainActivity.speedUnitId == R.id.action_ms) {
+                    windSpeedTextView.setText("Wind Speed: " + weatherData.getDays().get(0).getWindspeed() + " m/s");
+                }
+
                 windDirectionTextView.setText("Wind Direction: " + weatherData.getDays().get(0).getWinddir() + "°");
                 humidityTextView.setText("Humidity: " + weatherData.getDays().get(0).getHumidity() + "%");
             }
