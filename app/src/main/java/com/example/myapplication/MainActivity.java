@@ -1,8 +1,10 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Context;
 import android.content.DialogInterface;
@@ -17,6 +19,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -83,8 +88,33 @@ public class MainActivity extends AppCompatActivity {
         cityListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                String selectedCity = cityList.get(position);
-                showWeatherFragment(selectedCity);
+                String cityName = cityListAdapter.getItem(position);
+                WeatherData weatherData = WeatherUtils.getWeatherDataFromFile(MainActivity.this, cityName);
+
+                TabLayout tabLayout = findViewById(R.id.tabLayout);
+                ViewPager2 viewPager = findViewById(R.id.viewPager);
+                WeatherPagerAdapter weatherPagerAdapter = new WeatherPagerAdapter(getSupportFragmentManager(), getLifecycle(), weatherData);
+
+                viewPager.setAdapter(weatherPagerAdapter);
+                TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
+                    @Override
+                    public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                        switch (position) {
+                            case 0:
+                                tab.setText("Weather");
+                                break;
+                            case 1:
+                                tab.setText("Additional information");
+                                break;
+                            case 2:
+                                tab.setText("Forecast");
+                                break;
+                            default:
+                                throw new IllegalStateException("Invalid tab position: " + position);
+                        }
+                    }
+                });
+                tabLayoutMediator.attach();
             }
         });
 
@@ -99,17 +129,6 @@ public class MainActivity extends AppCompatActivity {
             fetchAndSaveWeatherData(cityList);
         } else {
             Toast.makeText(this, "No internet connection. Loading saved weather data (may be outdated).", Toast.LENGTH_LONG).show();
-
-            for (String city : cityList) {
-                String weatherData = loadWeatherDataFromFile(city);
-                if (weatherData != null) {
-                    // Wyświetl wczytane dane pogodowe dla danego miasta (zaimplementuj logikę wyświetlania danych)
-                }
-            }
-        }
-
-        if (!cityList.isEmpty()) {
-            showWeatherFragment(cityList.get(0));
         }
     }
 
@@ -258,30 +277,30 @@ public class MainActivity extends AppCompatActivity {
         return savedCities;
     }
 
-    private void showWeatherFragment(String cityName) {
-        WeatherData weatherData = WeatherUtils.getWeatherDataFromFile(this, cityName);
-
-        WeatherFragment weatherFragment = new WeatherFragment();
-        Bundle weatherArgs = new Bundle();
-        weatherArgs.putSerializable("weatherData", weatherData);
-        weatherFragment.setArguments(weatherArgs);
-
-        AdditionalWeatherFragment additionalWeatherFragment = new AdditionalWeatherFragment();
-        Bundle additionalWeatherArgs = new Bundle();
-        additionalWeatherArgs.putSerializable("weatherData", weatherData);
-        additionalWeatherFragment.setArguments(additionalWeatherArgs);
-
-        WeatherForecastFragment weatherForecastFragment = new WeatherForecastFragment();
-        Bundle weatherForecastArgs = new Bundle();
-        weatherForecastArgs.putSerializable("weatherData", weatherData);
-        weatherForecastFragment.setArguments(weatherForecastArgs);
-
-        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.weatherFragmentContainer, weatherFragment);
-        fragmentTransaction.replace(R.id.additionalWeatherFragmentContainer, additionalWeatherFragment);
-        fragmentTransaction.replace(R.id.weatherForecastFragmentContainer, weatherForecastFragment);
-        fragmentTransaction.commit();
-    }
+//    private void showWeatherFragment(String cityName) {
+//        WeatherData weatherData = WeatherUtils.getWeatherDataFromFile(this, cityName);
+//
+//        WeatherFragment weatherFragment = new WeatherFragment();
+//        Bundle weatherArgs = new Bundle();
+//        weatherArgs.putSerializable("weatherData", weatherData);
+//        weatherFragment.setArguments(weatherArgs);
+//
+//        AdditionalWeatherFragment additionalWeatherFragment = new AdditionalWeatherFragment();
+//        Bundle additionalWeatherArgs = new Bundle();
+//        additionalWeatherArgs.putSerializable("weatherData", weatherData);
+//        additionalWeatherFragment.setArguments(additionalWeatherArgs);
+//
+//        WeatherForecastFragment weatherForecastFragment = new WeatherForecastFragment();
+//        Bundle weatherForecastArgs = new Bundle();
+//        weatherForecastArgs.putSerializable("weatherData", weatherData);
+//        weatherForecastFragment.setArguments(weatherForecastArgs);
+//
+//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+//        fragmentTransaction.replace(R.id.weatherFragmentContainer, weatherFragment);
+//        fragmentTransaction.replace(R.id.additionalWeatherFragmentContainer, additionalWeatherFragment);
+//        fragmentTransaction.replace(R.id.weatherForecastFragmentContainer, weatherForecastFragment);
+//        fragmentTransaction.commit();
+//    }
 
 
 

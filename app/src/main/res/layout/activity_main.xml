@@ -28,23 +28,18 @@
         android:layout_width="match_parent"
         android:layout_height="129dp" />
 
-    <FrameLayout
-        android:id="@+id/weatherFragmentContainer"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
         android:layout_width="match_parent"
-        android:layout_height="170dp"
-        android:layout_below="@id/cityListView" />
+        android:layout_height="wrap_content"
+        app:tabGravity="fill"
+        app:tabMode="fixed" />
 
-    <FrameLayout
-        android:id="@+id/additionalWeatherFragmentContainer"
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
         android:layout_width="match_parent"
-        android:layout_height="152dp"
-        android:layout_below="@id/weatherFragmentContainer" />
-
-    <FrameLayout
-        android:id="@+id/weatherForecastFragmentContainer"
-        android:layout_width="match_parent"
-        android:layout_height="167dp"
-        android:layout_below="@id/additionalWeatherFragmentContainer" />
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 
 </LinearLayout>
