@@ -12,6 +12,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.text.InputType;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -247,21 +249,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private String loadWeatherDataFromFile(String cityName) {
-        try {
-            FileInputStream fis = openFileInput(cityName + ".json");
-            InputStreamReader isr = new InputStreamReader(fis);
-            BufferedReader bufferedReader = new BufferedReader(isr);
-            StringBuilder stringBuilder = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line);
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_refresh) {
+            // Tutaj umieść logikę odświeżania danych z internetu
+            // na przykład, można wywołać funkcję, która pobierze nowe dane pogodowe
+            for(String city : cityList) {
+                refreshWeatherData(city);
             }
-            return stringBuilder.toString();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+            return true;
         }
+        return super.onOptionsItemSelected(item);
     }
 
     private List<String> loadSavedCities() {
@@ -282,32 +286,61 @@ public class MainActivity extends AppCompatActivity {
         return savedCities;
     }
 
-//    private void showWeatherFragment(String cityName) {
-//        WeatherData weatherData = WeatherUtils.getWeatherDataFromFile(this, cityName);
-//
-//        WeatherFragment weatherFragment = new WeatherFragment();
-//        Bundle weatherArgs = new Bundle();
-//        weatherArgs.putSerializable("weatherData", weatherData);
-//        weatherFragment.setArguments(weatherArgs);
-//
-//        AdditionalWeatherFragment additionalWeatherFragment = new AdditionalWeatherFragment();
-//        Bundle additionalWeatherArgs = new Bundle();
-//        additionalWeatherArgs.putSerializable("weatherData", weatherData);
-//        additionalWeatherFragment.setArguments(additionalWeatherArgs);
-//
-//        WeatherForecastFragment weatherForecastFragment = new WeatherForecastFragment();
-//        Bundle weatherForecastArgs = new Bundle();
-//        weatherForecastArgs.putSerializable("weatherData", weatherData);
-//        weatherForecastFragment.setArguments(weatherForecastArgs);
-//
-//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-//        fragmentTransaction.replace(R.id.weatherFragmentContainer, weatherFragment);
-//        fragmentTransaction.replace(R.id.additionalWeatherFragmentContainer, additionalWeatherFragment);
-//        fragmentTransaction.replace(R.id.weatherForecastFragmentContainer, weatherForecastFragment);
-//        fragmentTransaction.commit();
-//    }
+    private void refreshWeatherData(String cityName) {
+        new Thread(() -> {
+            try {
+                URL url = new URL("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" + cityName + "/" + LocalDate.now(ZoneId.systemDefault()) + "/" + LocalDate.now(ZoneId.systemDefault()).plusDays(3) + "?unitGroup=metric&key=" + apiKey);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
 
+                StringBuilder stringBuilder = new StringBuilder();
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    stringBuilder.append(line);
+                }
 
+                String fileName = cityName + ".json";
+                FileOutputStream fos = openFileOutput(fileName, Context.MODE_PRIVATE);
+                fos.write(stringBuilder.toString().getBytes());
+                fos.close();
 
+                bufferedReader.close();
+                urlConnection.disconnect();
+
+                // Przetwórz nowo pobrane dane
+                WeatherData newWeatherData = WeatherUtils.getWeatherDataFromFile(MainActivity.this, cityName);
+
+                // Aktualizuj fragmenty za pomocą nowych danych
+                runOnUiThread(() -> {
+                    TabLayout tabLayout = findViewById(R.id.tabLayout);
+                    ViewPager2 viewPager = findViewById(R.id.viewPager);
+                    WeatherPagerAdapter weatherPagerAdapter = new WeatherPagerAdapter(getSupportFragmentManager(), getLifecycle(), newWeatherData);
+
+                    viewPager.setAdapter(weatherPagerAdapter);
+                    TabLayoutMediator tabLayoutMediator = new TabLayoutMediator(tabLayout, viewPager, new TabLayoutMediator.TabConfigurationStrategy() {
+                        @Override
+                        public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
+                            switch (position) {
+                                case 0:
+                                    tab.setText("Weather");
+                                    break;
+                                case 1:
+                                    tab.setText("Additional information");
+                                    break;
+                                case 2:
+                                    tab.setText("Forecast");
+                                    break;
+                                default:
+                                    throw new IllegalStateException("Invalid tab position: " + position);
+                            }
+                        }
+                    });
+                    tabLayoutMediator.attach();
+                });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
 
 }
