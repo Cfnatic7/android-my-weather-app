@@ -108,20 +108,20 @@ class WeatherDay implements Serializable {
         this.precip = precip;
     }
 
-    public double getWindSpeed() {
-        return windSpeed;
+    public double getWindspeed() {
+        return windspeed;
     }
 
-    public void setWindSpeed(double windSpeed) {
-        this.windSpeed = windSpeed;
+    public void setWindspeed(double windspeed) {
+        this.windspeed = windspeed;
     }
 
-    public double getWindDir() {
-        return windDir;
+    public double getWinddir() {
+        return winddir;
     }
 
-    public void setWindDir(int windDir) {
-        this.windDir = windDir;
+    public void setWinddir(int winddir) {
+        this.winddir = winddir;
     }
 
     public double getPressure() {
@@ -181,8 +181,8 @@ class WeatherDay implements Serializable {
     private double minTemp;
     private double humidity;
     private double precip;
-    private double windSpeed;
-    private double windDir;
+    private double windspeed;
+    private double winddir;
     private double pressure;
     private double cloudCover;
     private String sunrise;
@@ -190,21 +190,32 @@ class WeatherDay implements Serializable {
     private String conditions;
     private String icon;
 
-    public WeatherDay(String datetime, double temp, double maxTemp, double minTemp, int humidity, double precip, double windSpeed, int windDir, double pressure, double cloudCover, String sunrise, String sunset, String conditions, String icon) {
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    private String description;
+
+    public WeatherDay(String datetime, double temp, double maxTemp, double minTemp, int humidity, double precip, double windspeed, int winddir, double pressure, double cloudCover, String sunrise, String sunset, String conditions, String icon, String description) {
         this.datetime = datetime;
         this.temp = temp;
         this.maxTemp = maxTemp;
         this.minTemp = minTemp;
         this.humidity = humidity;
         this.precip = precip;
-        this.windSpeed = windSpeed;
-        this.windDir = windDir;
+        this.windspeed = windspeed;
+        this.winddir = winddir;
         this.pressure = pressure;
         this.cloudCover = cloudCover;
         this.sunrise = sunrise;
         this.sunset = sunset;
         this.conditions = conditions;
         this.icon = icon;
+        this.description = description;
     }
 }
 

@@ -26,20 +26,19 @@
     <ListView
         android:id="@+id/cityListView"
         android:layout_width="match_parent"
-        android:layout_height="321dp" />
+        android:layout_height="198dp" />
 
     <FrameLayout
         android:id="@+id/weatherFragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="288dp"
+        android:layout_height="214dp"
         android:layout_below="@id/cityListView" />
 
     <FrameLayout
         android:id="@+id/additionalWeatherFragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="201dp"
         android:layout_below="@id/weatherFragmentContainer" />
-
 
 
 </LinearLayout>

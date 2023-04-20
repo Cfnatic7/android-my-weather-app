@@ -35,17 +35,14 @@ public class WeatherFragment extends Fragment {
         pressureTextView = view.findViewById(R.id.pressureTextView);
         weatherDescriptionTextView = view.findViewById(R.id.weatherDescriptionTextView);
 
-        // Get WeatherData from the fragment's arguments
         WeatherData weatherData = (WeatherData) getArguments().getSerializable("weatherData");
 
-        // Update views with the new weather data
         cityNameTextView.setText(weatherData.getCityName());
         coordinatesTextView.setText("latitude: " + weatherData.getLatitude() + ", longitude: " + weatherData.getLongitude());
         dateTimeTextView.setText(weatherData.getDays().get(0).getDatetime());
         temperatureTextView.setText(String.valueOf(weatherData.getDays().get(0).getTemp()));
         pressureTextView.setText(String.valueOf(weatherData.getDays().get(0).getPressure()));
-        System.out.println("Initialized weather fragment");
-        System.out.println(coordinatesTextView.getText());
+        weatherDescriptionTextView.setText(weatherData.getDays().get(0).getDescription());
 
         return view;
     }
