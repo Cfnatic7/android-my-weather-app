@@ -38,10 +38,11 @@ public class AdditionalWeatherFragment extends Fragment {
             WeatherData weatherData = (WeatherData) getArguments().getSerializable("weatherData");
             if (weatherData != null) {
                 if (MainActivity.speedUnitId == R.id.action_kmh) {
-                    windSpeedTextView.setText("Wind Speed: " + weatherData.getDays().get(0).getWindspeed() + " km/h");
+                    String.format("Wind Speed: %.1f km/h", weatherData.getDays().get(0).getWindspeed());
+                    windSpeedTextView.setText(String.format("Wind Speed: %.1f km/h", weatherData.getDays().get(0).getWindspeed()));
                 }
                 else if (MainActivity.speedUnitId == R.id.action_ms) {
-                    windSpeedTextView.setText("Wind Speed: " + weatherData.getDays().get(0).getWindspeed() + " m/s");
+                    windSpeedTextView.setText(String.format("Wind Speed: %.1f m/s", weatherData.getDays().get(0).getWindspeed()));
                 }
 
                 windDirectionTextView.setText("Wind Direction: " + weatherData.getDays().get(0).getWinddir() + "°");

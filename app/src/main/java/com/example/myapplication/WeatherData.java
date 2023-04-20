@@ -69,7 +69,7 @@ class WeatherDay implements Serializable {
     }
 
     public double getTemp() {
-        if (MainActivity.temperatureUnitId == R.id.action_fahrenheit) return celsiusToFahrenheit(maxTemp);
+        if (MainActivity.temperatureUnitId == R.id.action_fahrenheit) return celsiusToFahrenheit(temp);
         return temp;
     }
 

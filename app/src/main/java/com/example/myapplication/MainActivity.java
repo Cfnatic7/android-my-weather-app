@@ -42,7 +42,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private EditText cityEditText;
 
-    private String apiKey = "9SBP5FA7VTPNJR8ASV82RE3HU";
+    public static String apiKey = "9SBP5FA7VTPNJR8ASV82RE3HU";
     private Button addCityButton;
     private ListView cityListView;
 
@@ -76,9 +76,18 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(mainActivity, "Can't add city when there is no internet connection.", Toast.LENGTH_LONG).show();
                 }
                 else if (!cityName.isEmpty()) {
-                    addCityToList(cityName);
-                    cityListAdapter.notifyDataSetChanged();
-                    cityEditText.getText().clear();
+                    new CityNameValidator(new CityNameValidator.OnValidationResultListener() {
+                        @Override
+                        public void onValidationResult(Boolean isValid) {
+                            if (isValid) {
+                                addCityToList(cityName);
+                                cityListAdapter.notifyDataSetChanged();
+                                cityEditText.getText().clear();
+                            } else {
+                                Toast.makeText(mainActivity, "Location specified is incorrect!", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    }).execute(cityName);
                 }
             }
         });
@@ -174,6 +183,23 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }).start();
+        }
+    }
+
+    private boolean isCityNameValid(String city) {
+        try {
+            URL url = new URL("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" + city + "/" + LocalDate.now(ZoneId.systemDefault()) + "/" + LocalDate.now(ZoneId.systemDefault()).plusDays(3) + "?unitGroup=metric&key=" + apiKey);
+            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+
+            StringBuilder stringBuilder = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                stringBuilder.append(line);
+            }
+            return !stringBuilder.toString().contains("Invalid location found");
+        } catch (IOException e) {
+            return false;
         }
     }
 
