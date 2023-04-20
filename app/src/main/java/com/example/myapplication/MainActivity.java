@@ -290,10 +290,15 @@ public class MainActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         if (id == R.id.action_refresh) {
-            for(String city : cityList) {
-                refreshWeatherData(city);
+            if (isConnectedToInternet()) {
+                for(String city : cityList) {
+                    refreshWeatherData(city);
+                }
+                return true;
             }
-            return true;
+            else {
+                Toast.makeText(MainActivity.this, "No internet connection. Unable to fetch weather data.", Toast.LENGTH_LONG).show();
+            }
         }
         else if (id == R.id.action_celsius || id == R.id.action_fahrenheit || id == R.id.action_kmh || id == R.id.action_ms) {
             if (id == R.id.action_celsius) {
