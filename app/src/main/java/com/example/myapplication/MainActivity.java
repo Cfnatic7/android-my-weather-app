@@ -47,6 +47,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<String> cityList;
     private ArrayAdapter<String> cityListAdapter;
 
+    private MainActivity mainActivity = this;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,7 +66,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String cityName = cityEditText.getText().toString();
-                if (!cityName.isEmpty()) {
+                if (!isConnectedToInternet()) {
+                    Toast.makeText(mainActivity, "Can't add city when there is no internet connection.", Toast.LENGTH_LONG).show();
+                }
+                else if (!cityName.isEmpty()) {
                     addCityToList(cityName);
                     cityListAdapter.notifyDataSetChanged();
                     cityEditText.getText().clear();

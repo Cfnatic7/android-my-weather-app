@@ -30,7 +30,7 @@ public class WeatherForecastAdapter extends RecyclerView.Adapter<WeatherForecast
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         WeatherDay weatherDay = weatherDays.get(position);
         holder.dateTextView.setText(weatherDay.getDatetime());
-        holder.temperatureTextView.setText(String.format("Temperature: %.1f °F", weatherDay.getTemp()));
+        holder.temperatureTextView.setText(String.format("Temperature: %.1f °C", weatherDay.getTemp()));
         holder.conditionsTextView.setText(weatherDay.getConditions());
     }
 

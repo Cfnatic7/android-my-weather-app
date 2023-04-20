@@ -39,9 +39,9 @@ public class WeatherFragment extends Fragment {
 
         cityNameTextView.setText(weatherData.getCityName());
         coordinatesTextView.setText("latitude: " + weatherData.getLatitude() + ", longitude: " + weatherData.getLongitude());
-        dateTimeTextView.setText(weatherData.getDays().get(0).getDatetime());
-        temperatureTextView.setText(String.valueOf(weatherData.getDays().get(0).getTemp()));
-        pressureTextView.setText(String.valueOf(weatherData.getDays().get(0).getPressure()));
+        dateTimeTextView.setText("current date: " + weatherData.getDays().get(0).getDatetime());
+        temperatureTextView.setText(String.valueOf(weatherData.getDays().get(0).getTemp()) + " °C");
+        pressureTextView.setText(String.valueOf(weatherData.getDays().get(0).getPressure()) + " hPa");
         weatherDescriptionTextView.setText(weatherData.getDays().get(0).getDescription());
 
         return view;
