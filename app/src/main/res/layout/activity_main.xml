@@ -26,19 +26,25 @@
     <ListView
         android:id="@+id/cityListView"
         android:layout_width="match_parent"
-        android:layout_height="198dp" />
+        android:layout_height="129dp" />
 
     <FrameLayout
         android:id="@+id/weatherFragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="214dp"
+        android:layout_height="170dp"
         android:layout_below="@id/cityListView" />
 
     <FrameLayout
         android:id="@+id/additionalWeatherFragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="201dp"
+        android:layout_height="152dp"
         android:layout_below="@id/weatherFragmentContainer" />
+
+    <FrameLayout
+        android:id="@+id/weatherForecastFragmentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="167dp"
+        android:layout_below="@id/additionalWeatherFragmentContainer" />
 
 
 </LinearLayout>

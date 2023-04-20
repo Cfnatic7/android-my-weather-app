@@ -271,11 +271,18 @@ public class MainActivity extends AppCompatActivity {
         additionalWeatherArgs.putSerializable("weatherData", weatherData);
         additionalWeatherFragment.setArguments(additionalWeatherArgs);
 
+        WeatherForecastFragment weatherForecastFragment = new WeatherForecastFragment();
+        Bundle weatherForecastArgs = new Bundle();
+        weatherForecastArgs.putSerializable("weatherData", weatherData);
+        weatherForecastFragment.setArguments(weatherForecastArgs);
+
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.weatherFragmentContainer, weatherFragment);
         fragmentTransaction.replace(R.id.additionalWeatherFragmentContainer, additionalWeatherFragment);
+        fragmentTransaction.replace(R.id.weatherForecastFragmentContainer, weatherForecastFragment);
         fragmentTransaction.commit();
     }
+
 
 
 
