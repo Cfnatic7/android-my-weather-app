@@ -11,6 +11,8 @@ import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,7 +44,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
     private EditText cityEditText;
 
-    public static String apiKey = "9SBP5FA7VTPNJR8ASV82RE3HU";
+    public static String apiKey = "ZDHL78EEVEBDJ4ZF9ZF5Y668F";
+
+    private final int REFRESH_INTERVAL = 60 * 1000;
+
+    private Handler handler;
     private Button addCityButton;
     private ListView cityListView;
 
@@ -54,6 +60,20 @@ public class MainActivity extends AppCompatActivity {
     public static int temperatureUnitId = R.id.action_celsius;
 
     public static int speedUnitId = R.id.action_kmh;
+
+    private Runnable refreshRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (isConnectedToInternet()) {
+                for (String city : cityList) {
+                    refreshWeatherData(city);
+                }
+                  // Twój kod do odświeżania danych pogodowych.
+                Toast.makeText(MainActivity.this, "Data refreshed", Toast.LENGTH_SHORT).show();
+            }
+            handler.postDelayed(this, REFRESH_INTERVAL);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -150,6 +170,19 @@ public class MainActivity extends AppCompatActivity {
         } else {
             Toast.makeText(this, "No internet connection. Loading saved weather data (may be outdated).", Toast.LENGTH_LONG).show();
         }
+        handler = new Handler(Looper.getMainLooper());
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        handler.post(refreshRunnable);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        handler.removeCallbacks(refreshRunnable);
     }
 
     private boolean isConnectedToInternet() {
