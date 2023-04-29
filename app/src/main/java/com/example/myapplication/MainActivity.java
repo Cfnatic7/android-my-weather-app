@@ -173,6 +173,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("refreshInterval", refreshInterval);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        refreshInterval = savedInstanceState.getInt("refreshInterval");
+        setRefreshInterval(refreshInterval);
+    }
+
+    @Override
     protected void onResume() {
         super.onResume();
         handler.post(refreshRunnable);
