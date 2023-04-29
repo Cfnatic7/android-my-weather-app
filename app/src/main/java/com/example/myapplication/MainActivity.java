@@ -231,23 +231,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private boolean isCityNameValid(String city) {
-        try {
-            URL url = new URL("https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/" + city + "/" + LocalDate.now(ZoneId.systemDefault()) + "/" + LocalDate.now(ZoneId.systemDefault()).plusDays(3) + "?unitGroup=metric&key=" + apiKey);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-
-            StringBuilder stringBuilder = new StringBuilder();
-            String line;
-            while ((line = bufferedReader.readLine()) != null) {
-                stringBuilder.append(line);
-            }
-            return !stringBuilder.toString().contains("Invalid location found");
-        } catch (IOException e) {
-            return false;
-        }
-    }
-
     private void addCityToList(String city) {
         if (!cityList.contains(city)) {
             cityList.add(city);
@@ -268,59 +251,6 @@ public class MainActivity extends AppCompatActivity {
         if (file.exists()) {
             file.delete();
         }
-    }
-
-    private void showEditCityDialog(final int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Edit City");
-
-
-        final EditText input = new EditText(this);
-        input.setInputType(InputType.TYPE_CLASS_TEXT);
-        input.setText(cityList.get(position));
-        builder.setView(input);
-
-
-        builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                String newCityName = input.getText().toString().trim();
-                String oldCityName = cityList.get(position);
-
-                if (newCityName.isEmpty()) {
-                    Toast.makeText(MainActivity.this, "City name cannot be empty.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                if (cityList.contains(newCityName) && !cityList.get(position).equals(newCityName)) {
-                    Toast.makeText(MainActivity.this, "City already exists in the list.", Toast.LENGTH_LONG).show();
-                    return;
-                }
-
-                deleteWeatherDataFile(oldCityName);
-
-
-                cityList.set(position, newCityName);
-                cityListAdapter.notifyDataSetChanged();
-
-
-                if (isConnectedToInternet()) {
-                    List<String> updatedCityList = new ArrayList<>();
-                    updatedCityList.add(newCityName);
-                    fetchAndSaveWeatherData(updatedCityList);
-                } else {
-                    Toast.makeText(MainActivity.this, "No internet connection. Unable to fetch weather data.", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.cancel();
-            }
-        });
-
-        builder.show();
     }
 
 
