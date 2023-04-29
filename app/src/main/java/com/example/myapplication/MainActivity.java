@@ -3,7 +3,6 @@ package com.example.myapplication;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
 
 import android.content.Context;
@@ -29,7 +28,6 @@ import com.google.android.material.tabs.TabLayoutMediator;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
@@ -42,11 +40,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
+    public static final int MINUTE = 60 * 1000;
     private EditText cityEditText;
 
     public static String apiKey = "ZDHL78EEVEBDJ4ZF9ZF5Y668F";
 
-    private final int REFRESH_INTERVAL = 60 * 1000;
+    private int refreshInterval = 60 * 100;
 
     private Handler handler;
     private Button addCityButton;
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                   // Twój kod do odświeżania danych pogodowych.
                 Toast.makeText(MainActivity.this, "Data refreshed", Toast.LENGTH_SHORT).show();
             }
-            handler.postDelayed(this, REFRESH_INTERVAL);
+            handler.postDelayed(this, refreshInterval);
         }
     };
 
@@ -349,7 +348,34 @@ public class MainActivity extends AppCompatActivity {
             refreshView();
             return true;
         }
+        switch (item.getItemId()) {
+            case R.id.action_interval_1min:
+                setIntervalAndRefreshHandler(MINUTE);
+                return true;
+            case R.id.action_interval_5min:
+                setIntervalAndRefreshHandler(5 * MINUTE);
+                return true;
+            case R.id.action_interval_15min:
+                setIntervalAndRefreshHandler(15 * MINUTE);
+                return true;
+            case R.id.action_interval_30min:
+                setIntervalAndRefreshHandler(30 * MINUTE);
+                return true;
+            case R.id.action_interval_60min:
+                setIntervalAndRefreshHandler(60 * MINUTE);
+                return true;
+        }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setIntervalAndRefreshHandler(int newRefreshInterval) {
+        handler.removeCallbacks(refreshRunnable);
+        setRefreshInterval(newRefreshInterval);
+        handler.post(refreshRunnable);
+    }
+
+    private void setRefreshInterval(int newRefreshInterval) {
+        refreshInterval = newRefreshInterval;
     }
 
     private List<String> loadSavedCities() {
